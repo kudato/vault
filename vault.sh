@@ -11,7 +11,7 @@ for i in \
     AWS_KMS_KEY_ID=False \
     VAULT_SERVER_MAX_LEASE_TTL=1h \
     VAULT_SERVER_DEF_LEASE_TTL=1h \
-    VAULT_SERVER_DISABLE_MLOCK=true \
+    VAULT_SERVER_DISABLE_MLOCK=false \
     VAULT_SERVER_LOG_FORMAT=json \
     VAULT_SERVER_TLS_DISABLE=1 \
     VAULT_SERVER_PORT=8200 \
@@ -46,6 +46,11 @@ default_lease_ttl = "${VAULT_SERVER_DEF_LEASE_TTL}"
 disable_mlock = ${VAULT_SERVER_DISABLE_MLOCK}
 log_format = "${VAULT_SERVER_LOG_FORMAT}"
 EOF
+
+if [[ "${VAULT_SERVER_DISABLE_MLOCK}" == "false" ]]
+then
+    setcap cap_ipc_lock=+ep $(readlink -f $(which vault))
+fi
 
 if [[ "${AWS_KMS_KEY_ID}" != "False" ]]
 then
