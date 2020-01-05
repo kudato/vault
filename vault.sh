@@ -13,12 +13,13 @@ for i in \
     VAULT_SERVER_DEF_LEASE_TTL=1h \
     VAULT_SERVER_DISABLE_MLOCK=false \
     VAULT_SERVER_LOG_FORMAT=json \
-    VAULT_SERVER_TLS_DISABLE=1 \
     VAULT_SERVER_ADDR=0.0.0.0 \
     VAULT_SERVER_PORT=8200 \
+    VAULT_SERVER_TLS_DISABLE=1 \
+    VAULT_SERVER_TLS_KEY=false \
+    VAULT_SERVER_TLS_CERT=false \
     VAULT_SERVER_UI=true \
-    VAULT_SERVER_PP_BEHAVIOR,VAULT_SERVER_PROXY_PROTOCOL_BEHAVIOR=use_always \
-    VAULT_SERVER_PP_AUTH_ADDRS,VAULT_SERVER_PROXY_PROTOCOL_AUTH_ADDRS=false
+    VAULT_SERVET_X_FWD_ALLOW_ADDR=false
 do
     defaultEnv "${i}"
 done
@@ -36,14 +37,15 @@ storage "s3" {
 listener "tcp" {
   address     = "${VAULT_SERVER_ADDR}:${VAULT_SERVER_PORT}"
   tls_disable = ${VAULT_SERVER_TLS_DISABLE}
-  proxy_protocol_behavior = "${VAULT_SERVER_PROTOCOL_BEHAVIOR}"
-  ##TCPproxy_protocol_authorized_addrs = "${VAULT_SERVER_PROXY_PROTOCOL_AUTH_ADDRS}"
+#TLS#  tls_cert_file = "${VAULT_SERVER_TLS_CERT}"
+#TLS#  tls_key_file  = "${VAULT_SERVER_TLS_KEY}"
+#XFWD#  x_forwarded_for_authorized_addrs = "${VAULT_SERVET_X_FWD_ALLOW_ADDR}"
 }
 
-##KMSseal "awskms" {
-##KMS  region     = "${AWS_KMS_REGION}"
-##KMS  kms_key_id = "${AWS_KMS_KEY_ID}"
-##KMS}
+#KMS#seal "awskms" {
+#KMS#  region     = "${AWS_KMS_REGION}"
+#KMS#  kms_key_id = "${AWS_KMS_KEY_ID}"
+#KMS#}
 
 ui = ${VAULT_SERVER_UI}
 max_lease_ttl = "${VAULT_SERVER_MAX_LEASE_TTL}"
@@ -57,12 +59,17 @@ then
     setcap cap_ipc_lock=+ep "$(readlink -f "$(which vault)")"
 fi
 
-if [[ "${AWS_KMS_KEY_ID}" != "false" ]]
+if [[ "${VAULT_SERVER_TLS_DISABLE}" != "1" ]]
 then
-    sed -i "s|##TCP||g" /config.hcl
+    sed -i "s|#TLS#||g" /config.hcl
 fi
 
-if [[ "${VAULT_SERVER_PROXY_PROTOCOL_AUTH_ADDRS}" != "false" ]]
+if [[ "${VAULT_SERVET_X_FWD_ALLOW_ADDR}" != "false" ]]
 then
-    sed -i "s|##KMS||g" /config.hcl
+    sed -i "s|#XFWD#||g" /config.hcl
+fi
+
+if [[ "${AWS_KMS_KEY_ID}" != "false" ]]
+then
+    sed -i "s|#KMS#||g" /config.hcl
 fi
