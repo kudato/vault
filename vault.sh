@@ -16,7 +16,8 @@ for i in \
     VAULT_SERVER_TLS_DISABLE=1 \
     VAULT_SERVER_ADDR=0.0.0.0 \
     VAULT_SERVER_PORT=8200 \
-    VAULT_SERVER_UI=true
+    VAULT_SERVER_UI=true \
+    VAULT_SERVER_PROTOCOL_BEHAVIOR=use_always
 do
     defaultEnv "${i}"
 done
@@ -34,6 +35,7 @@ storage "s3" {
 listener "tcp" {
  address     = "${VAULT_SERVER_ADDR}:${VAULT_SERVER_PORT}"
  tls_disable = ${VAULT_SERVER_TLS_DISABLE}
+ proxy_protocol_behavior = "${VAULT_SERVER_PROTOCOL_BEHAVIOR}"
 }
 
 ##seal "awskms" {
