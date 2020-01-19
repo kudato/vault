@@ -11,7 +11,7 @@ env:
   - DOCKER_HUB_IMAGE=kudato/vault
 
 script:
-  - docker build -t "${DOCKER_HUB_IMAGE}:latest" .
-  - docker tag "${DOCKER_HUB_IMAGE}:latest" "${DOCKER_HUB_IMAGE}:${TRAVIS_COMMIT:0:7}"
-  - docker push "${DOCKER_HUB_IMAGE}:latest"
-  - docker push "${DOCKER_HUB_IMAGE}:${TRAVIS_COMMIT:0:7}"
+- docker build -t "${DOCKER_HUB_IMAGE}:latest" .
+- docker tag "${DOCKER_HUB_IMAGE}:latest" "${DOCKER_HUB_IMAGE}:${TRAVIS_COMMIT:0:7}"
+- docker push "${DOCKER_HUB_IMAGE}:latest"
+- docker push "${DOCKER_HUB_IMAGE}:${TRAVIS_COMMIT:0:7}"

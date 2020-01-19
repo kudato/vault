@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-source /usr/bin/lib.sh
+source /usr/bin/entrypoint.sh --import
 
 for i in \
     AWS_REGION,AWS_DEFAULT_REGION,AWS_S3_REGION=us-east-1 \
